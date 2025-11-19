@@ -1,4 +1,4 @@
-import { Mic, Speech, AlarmClock, Code2 } from "lucide-react";
+import { Mic, Speech, AlarmClock, Code2, MessageSquare } from "lucide-react";
 
 import {
   Sidebar,
@@ -32,6 +32,11 @@ const items = [
     title: "editor",
     url: "/code",
     icon: Code2,
+  },
+  {
+    title: "chat",
+    url: "/chat",
+    icon: MessageSquare,
   },
 ];
 
