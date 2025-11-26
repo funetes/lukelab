@@ -1,4 +1,11 @@
-import { Mic, Speech, AlarmClock, Code2, MessageSquare } from "lucide-react";
+import {
+  Mic,
+  Speech,
+  AlarmClock,
+  Code2,
+  MessageSquare,
+  Home,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -13,6 +20,11 @@ import {
 
 // Menu items.
 const items = [
+  {
+    title: "home",
+    url: "/",
+    icon: Home,
+  },
   {
     title: "recorder",
     url: "/recorder",
@@ -51,9 +63,14 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a
+                      href={item.url}
+                      className="inline-flex items-center justify-start h-12"
+                    >
+                      <div className="flex items-center justify-center space-x-2">
+                        <item.icon />
+                        <span className="text-xl">{item.title}</span>
+                      </div>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
