@@ -41,11 +41,6 @@ const items = [
     icon: AlarmClock,
   },
   {
-    title: "editor",
-    url: "/code",
-    icon: Code2,
-  },
-  {
     title: "chat",
     url: "/chat",
     icon: MessageSquare,
