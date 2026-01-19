@@ -46,21 +46,21 @@ const easySentences = [
 ];
 
 const difficultSentences = [
-  "서울특별시 특허허가과 허가과장 허 과장은 헌 과장이고, 새 과장은 안 과장입니다.",
-  "경찰청 창살 쇠창살은 외철 창살이고, 검찰청 창살 쇠창살은 쌍철 창살이라는 점입니다.",
-  "저기 계신 저분이 박 법학박사이고, 여기 계신 이분이 백 법학박사님이십니다.",
-  "간장 공장 공장장은 강 공장장이고, 된장 공장 공장장은 공 공장장이라는 사실입니다.",
-  "안 촉촉한 초코칩 나라에 살던 안 촉촉한 초코칩이 촉촉한 초코칩이 되었습니다.",
-  "한국관광공사 곽 관광 과장은 관광 과목 강의를 위해 관광 교육과정을 개설했습니다.",
-  "신진 샹송 가수의 신춘 샹송 쇼는 정말 쑥스럽고 색다른 센세이션을 일으켰습니다.",
-  "칠월 칠일은 평창 친구 친정 칠순 잔칫날이라 칠칠한 며느리가 채소 쌈을 차렸습니다.",
-  "붉은 팥 풋팥죽은 헛배가 부르고, 묽은 팥 풋팥죽은 배가 안 부르다는 옛말이 있죠.",
-  "상표를 붙인 큰 깡통은 깐 깡통인가 안 깐 깡통인가를 자세히 관찰해 보십시오.",
-  "금융감독원은 가상자산 이용자 보호법 시행에 따라 불공정 거래 행위를 엄중히 단속합니다.",
-  "중앙선거관리위원회는 공직선거법 위반 혐의에 대해 철저히 조사하겠다고 밝혔습니다.",
-  "기상청은 북태평양 고기압의 가장자리에 들어 대기 불안정에 의한 소나기를 예보했습니다.",
-  "헌법재판소는 이번 탄핵 심판 청구 사건에 대해 재판관 전원 일치로 기각을 선고했습니다.",
-  "생각이란 생각하면 생각할수록 생각나는 것이 바로 생각이라는 것을 생각하시길 바랍니다.",
+  "서울특별시 특허허가과 허가과장 허 과장은 헌 과장이고, 새 과장은 안 과장입니다",
+  "경찰청 창살 쇠창살은 외철 창살이고, 검찰청 창살 쇠창살은 쌍철 창살이라는 점입니다",
+  "저기 계신 저분이 박 법학박사이고, 여기 계신 이분이 백 법학박사님이십니다",
+  "간장 공장 공장장은 강 공장장이고, 된장 공장 공장장은 공 공장장이라는 사실입니다",
+  "안 촉촉한 초코칩 나라에 살던 안 촉촉한 초코칩이 촉촉한 초코칩이 되었습니다",
+  "한국관광공사 곽 관광 과장은 관광 과목 강의를 위해 관광 교육과정을 개설했습니다",
+  "신진 샹송 가수의 신춘 샹송 쇼는 정말 쑥스럽고 색다른 센세이션을 일으켰습니다",
+  "칠월 칠일은 평창 친구 친정 칠순 잔칫날이라 칠칠한 며느리가 채소 쌈을 차렸습니다",
+  "붉은 팥 풋팥죽은 헛배가 부르고, 묽은 팥 풋팥죽은 배가 안 부르다는 옛말이 있죠",
+  "상표를 붙인 큰 깡통은 깐 깡통인가 안 깐 깡통인가를 자세히 관찰해 보십시오",
+  "금융감독원은 가상자산 이용자 보호법 시행에 따라 불공정 거래 행위를 엄중히 단속합니다",
+  "중앙선거관리위원회는 공직선거법 위반 혐의에 대해 철저히 조사하겠다고 밝혔습니다",
+  "기상청은 북태평양 고기압의 가장자리에 들어 대기 불안정에 의한 소나기를 예보했습니다",
+  "헌법재판소는 이번 탄핵 심판 청구 사건에 대해 재판관 전원 일치로 기각을 선고했습니다",
+  "생각이란 생각하면 생각할수록 생각나는 것이 바로 생각이라는 것을 생각하시길 바랍니다",
 ];
 
 function shuffleArray(array: Array<string>) {
@@ -274,8 +274,8 @@ const Recorder = () => {
   };
 
   const getScore = (currentWord: string, resText: string) => {
-    const currentWordTrim = currentWord.trim();
-    const resTextTrim = resText.trim();
+    const currentWordTrim = currentWord.trim().replaceAll(" ", "");
+    const resTextTrim = resText.trim().replaceAll(" ", "");
     if (!currentWordTrim || !resTextTrim) return 0;
     if (currentWordTrim === resTextTrim) return 100;
 
@@ -291,7 +291,7 @@ const Recorder = () => {
     <div className="flex flex-col justfy-center mt-20 items-center max-w-4xl mx-auto p-4">
       <div className="flex items-end justify-start mb-4 space-x-2 w-full">
         <h1 className="text-2xl font-bold">O-Cho (오초) </h1>
-        <span> ai가 발음을 채점해드립니다.</span>
+        <span>ai가 발음을 채점해드립니다.</span>
       </div>
       <div className="p-6 border rounded-2xl w-full flex flex-col items-center">
         <div className="h-1 w-full bg-zinc-800 mb-4 rounded-full overflow-hidden">
