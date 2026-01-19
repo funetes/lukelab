@@ -64,13 +64,13 @@ export default function LiveMicGaugeBars({
         const f = minF * Math.pow(maxF / minF, t);
         const bin = Math.min(
           bins - 1,
-          Math.max(0, Math.round((f / nyquist) * bins))
+          Math.max(0, Math.round((f / nyquist) * bins)),
         );
         edges.push(bin);
       }
       return edges;
     },
-    [barCount]
+    [barCount],
   );
 
   const loop = useCallback(() => {
@@ -125,8 +125,9 @@ export default function LiveMicGaugeBars({
     if (isRunning) return;
     try {
       if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext ||
-          (window as any).webkitAudioContext)({ latencyHint: "interactive" });
+        audioCtxRef.current = new (
+          window.AudioContext || (window as any).webkitAudioContext
+        )({ latencyHint: "interactive" });
       }
       const ctx = audioCtxRef.current;
       if (ctx.state === "suspended") await ctx.resume();
@@ -181,7 +182,7 @@ export default function LiveMicGaugeBars({
     if (recordState === "recording") {
       start();
     }
-    if (recordState === "paused" || recordState === "finishing") {
+    if (recordState === "paused" || recordState === "finished") {
       stop();
     }
   }, [recordState, start]);
@@ -224,30 +225,6 @@ export default function LiveMicGaugeBars({
           ))}
         </div>
       </div>
-
-      {/* <div className="flex items-center gap-2">
-        <button
-          onClick={start}
-          disabled={isRunning}
-          className="px-3 py-2 rounded-xl bg-white text-black font-medium disabled:opacity-40"
-        >
-          Start
-        </button>
-        <button
-          onClick={stop}
-          disabled={!isRunning}
-          className="px-3 py-2 rounded-xl bg-neutral-800 text-white font-medium disabled:opacity-40"
-        >
-          Stop
-        </button>
-        <span className="text-sm text-neutral-400">
-          {isRunning
-            ? "실시간 게이지 표시 중"
-            : error
-            ? `에러: ${error}`
-            : "대기 중"}
-        </span>
-      </div> */}
     </div>
   );
 }
