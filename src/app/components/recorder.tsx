@@ -99,18 +99,15 @@ const Recorder = () => {
   const [audioURL, setAudioURL] = useState<string>("");
   const [recorder, setRecorder] = useState<MediaRecorder>();
 
-  const mimeRef = useRef<string>("audio/webm");
-  const chunksRef = useRef<ArrayBuffer[]>([]);
-  // const audioRef = useRef<HTMLAudioElement>(null);
-
   const [wavesurfer, setWavesurfer] = useState<WaveSurfer>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [blob, setBlob] = useState<Blob | File>();
-  // const [flac, setFlac] = useState<File | null>();
   const [loading, setLoading] = useState(false);
   const [resText, setResText] = useState("");
   const [currentWord, setCurrentWord] = useState("");
 
+  const mimeRef = useRef<string>("audio/webm");
+  const chunksRef = useRef<ArrayBuffer[]>([]);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const timeRef = useRef<HTMLSpanElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -246,15 +243,9 @@ const Recorder = () => {
         if (!flac) return;
         const fd = new FormData();
         fd.append("file", flac);
-        fd.append("language", "ko"); // 옵션: ko/en/auto
-        fd.append("task", "transcribe"); // 또는 translate
-        fd.append("output", "json"); // srt/vtt/txt 가능
 
-        const res = await fetch("https://ai.rootly.kr/transcribe", {
+        const res = await fetch("/api/transcribe", {
           method: "POST",
-          headers: {
-            "x-api-key": process.env.NEXT_PUBLIC_STT_KEY as string,
-          },
           body: fd,
         });
         if (!res.ok) {
