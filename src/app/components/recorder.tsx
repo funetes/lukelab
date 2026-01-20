@@ -156,11 +156,8 @@ const Recorder = () => {
     };
 
     mediaRecorder.onstart = () => setState("recording");
-    mediaRecorder.onpause = () => setState("paused");
-    mediaRecorder.onresume = () => setState("recording");
     mediaRecorder.onstop = () => {
       stream.getTracks().forEach((t) => t.stop());
-      // stopTimer();
       setState("finished");
     };
 
@@ -299,13 +296,6 @@ const Recorder = () => {
           <div
             className="border p-4 rounded-2xl mt-16 hover:bg-gray-800 cursor-pointer transition-colors"
             onClick={() => {
-              if (
-                recorder?.state === "recording" ||
-                recorder?.state === "paused"
-              ) {
-                stop();
-                return;
-              }
               start();
             }}
           >
