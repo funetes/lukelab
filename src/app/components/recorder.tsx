@@ -31,7 +31,6 @@ const Recorder = () => {
   const [recorder, setRecorder] = useState<MediaRecorder>();
 
   const [wavesurfer, setWavesurfer] = useState<WaveSurfer>();
-  const [isPlaying, setIsPlaying] = useState(false);
   const [blob, setBlob] = useState<Blob | File>();
   const [loading, setLoading] = useState(false);
   const [resText, setResText] = useState("");
@@ -46,7 +45,6 @@ const Recorder = () => {
 
   const onReady = (ws: WaveSurfer) => {
     setWavesurfer(ws);
-    setIsPlaying(false);
   };
 
   const onPlayPause = () => {
@@ -85,7 +83,7 @@ const Recorder = () => {
       recorder.stop();
       const chunk = chunksRef.current;
 
-      // if (!chunk.length) return;
+      if (!chunk.length) return;
       const blob = new Blob(chunk, { type: mimeRef.current });
       setBlob(blob);
       const audioURL = URL.createObjectURL(blob);
@@ -104,7 +102,6 @@ const Recorder = () => {
     setBlob(undefined);
     setResText("");
     setCurrentWord("");
-    setIsPlaying(false);
     chunksRef.current = [];
     if (progressBarRef.current) progressBarRef.current.style.width = "0%";
     if (timeRef.current) timeRef.current.innerText = "00:00";
@@ -115,8 +112,6 @@ const Recorder = () => {
       if (blob) {
         setLoading(true);
         const flac = await toFlac16kMono(blob);
-        // TODO: fileupload / transcribe 요청
-        // setFlac(flac);
 
         if (!flac) return;
         const fd = new FormData();
@@ -258,8 +253,6 @@ const Recorder = () => {
                 progressColor="#FFFFFF"
                 url={audioURL}
                 onReady={onReady}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
               />
             </div>
           )}
