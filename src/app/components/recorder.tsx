@@ -138,17 +138,31 @@ const Recorder = () => {
   };
 
   const getScore = (currentWord: string, resText: string) => {
-    const currentWordTrim = currentWord.trim().replaceAll(" ", "");
-    const resTextTrim = resText.trim().replaceAll(" ", "");
-    if (!currentWordTrim || !resTextTrim) return 0;
-    if (currentWordTrim === resTextTrim) return 100;
+    const tokensA = currentWord
+      .replace(/[^\w\s가-힣]/g, "")
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t.length > 0);
+    const tokensB = resText
+      .replace(/[^\w\s가-힣]/g, "")
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t.length > 0);
 
-    let score = 0;
+    if (tokensA.length === 0 || tokensB.length === 0) return 0;
 
-    Array.from(currentWordTrim).forEach((char, i) => {
-      if (char[i] === resText[i]) score = +score;
-    });
-    return Math.round(score / resText.length);
+    const setA = new Set(tokensA);
+    const setB = new Set(tokensB);
+
+    const intersection = new Set(
+      [...setA].filter((a) =>
+        [...setB].some((b) => a.includes(b) || b.includes(a)),
+      ),
+    );
+    const union = new Set([...setA, ...setB]);
+
+    if (union.size === 0) return 0;
+    return Math.round((intersection.size / union.size) * 100);
   };
 
   useEffect(() => {
