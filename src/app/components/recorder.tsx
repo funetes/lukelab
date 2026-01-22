@@ -1,16 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-//  녹음 => 저장 (idb - blob형태)
-//  1. 녹음할때 상태, 필요 데이터 파악하기
-//  2. 저장 - 청크단위로 push하고 나중에 한번에 합치기
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import WavesurferPlayer from "@wavesurfer/react";
 import WaveSurfer from "wavesurfer.js";
 import LiveMicWaveform from "./liveMicWaveform";
 import { toFlac16kMono } from "@/lib/transcode";
-import { LoaderCircleIcon, MicIcon } from "lucide-react";
+import {
+  CirclePauseIcon,
+  LoaderCircleIcon,
+  MicIcon,
+  PlayCircleIcon,
+} from "lucide-react";
 import { difficultSentences, easySentences } from "../../../public/sentences";
 import { shuffleArray } from "@/lib/suffleArray";
 
@@ -41,6 +42,7 @@ const Recorder = () => {
   const [resText, setResText] = useState("");
   const [transcript, setTranscript] = useState<Transcript["words"]>([]);
   const [currentWord, setCurrentWord] = useState("");
+  const [currentTime, setCurrentTime] = useState(0);
 
   const mimeRef = useRef<string>("audio/webm");
   const chunksRef = useRef<ArrayBuffer[]>([]);
@@ -180,6 +182,16 @@ const Recorder = () => {
   };
 
   useEffect(() => {
+    if (!wavesurfer) return;
+
+    const sub = wavesurfer.on("timeupdate", (time) => {
+      setCurrentTime(time);
+    });
+
+    return () => sub();
+  }, [wavesurfer]);
+
+  useEffect(() => {
     // 녹음 MIME 결정 (Safari는 보통 audio/mp4가 안정적)
     const isSupportCodec = MediaRecorder.isTypeSupported(
       "audio/webm;codecs=opus",
@@ -266,22 +278,58 @@ const Recorder = () => {
             )}
           </div>
         )}
-        <div className="space-y-4 flex flex-col mt-20 items-center">
+        <div className="space-y-4 flex flex-col mt-12 items-center">
           {audioURL && state === "finished" && (
-            <div className="flex items-center justify-center flex-row space-y-4">
-              <div className="space-x-4">
-                <Button onClick={onPlayPause} variant={"ghost"}>
-                  미리듣기
-                </Button>
-              </div>
+            <div className="flex items-center justify-around flex-row w-full border p-2 rounded-xl">
+              <button
+                onClick={onPlayPause}
+                className="cursor-pointer hover:bg-gray-600/50 rounded-full flex items-center justify-center"
+              >
+                {wavesurfer?.isPlaying() ? (
+                  <CirclePauseIcon width={50} height={50} />
+                ) : (
+                  <PlayCircleIcon width={50} height={50} />
+                )}
+              </button>
+              <div className="h-16 w-px bg-gray-500 mx-2" />
+
               <WavesurferPlayer
-                height={100}
+                height={80}
                 width={250}
+                barHeight={2}
+                cursorColor="oklch(76.5% 0.177 163.223)"
+                cursorWidth={2}
                 waveColor="rgb(255,255,255)"
                 progressColor="#FFFFFF"
                 url={audioURL}
                 onReady={onReady}
+                onFinish={() => {
+                  wavesurfer?.seekTo(0);
+                }}
               />
+            </div>
+          )}
+          {resText && (
+            <div className="flex flex-col border rounded-2xl p-4">
+              <span>AI 분석 결과 {getScore(currentWord, resText)}% 일치</span>
+              <div className="max-w-90">
+                {transcript.map((t, i) => {
+                  const isActive =
+                    currentTime >= t.start && currentTime <= t.end;
+                  return (
+                    <span
+                      key={i}
+                      className={`text-2xl transition-colors duration-100 ${
+                        isActive
+                          ? "text-emerald-400 font-bold"
+                          : "text-zinc-400"
+                      }`}
+                    >
+                      {t.word}{" "}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
           )}
           {state === "finished" && (
@@ -293,24 +341,14 @@ const Recorder = () => {
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <Button onClick={transcribe}>분석하기</Button>
-                  <Button onClick={reset} variant="secondary">
-                    다시하기
-                  </Button>
+                  {!resText && <Button onClick={transcribe}>분석하기</Button>}
+                  {resText && (
+                    <Button onClick={reset} variant="secondary">
+                      다시하기
+                    </Button>
+                  )}
                 </div>
               )}
-            </div>
-          )}
-          {resText && (
-            <div className="flex flex-col border rounded-2xl p-4">
-              <span>AI 분석 결과 {getScore(currentWord, resText)}% 일치</span>
-              <div className="max-w-90">
-                {transcript.map((t, i) => (
-                  <span key={i} className="text-2xl">
-                    {t.word}
-                  </span>
-                ))}
-              </div>
             </div>
           )}
         </div>
