@@ -16,6 +16,11 @@ import { shuffleArray } from "@/lib/suffleArray";
 
 const words = shuffleArray([...easySentences, ...difficultSentences]);
 
+type Transcript = {
+  text: string;
+  words: { start: number; end: number; word: string }[];
+};
+
 export type RecState =
   | "idle"
   | "ready"
@@ -34,6 +39,7 @@ const Recorder = () => {
   const [blob, setBlob] = useState<Blob | File>();
   const [loading, setLoading] = useState(false);
   const [resText, setResText] = useState("");
+  const [transcript, setTranscript] = useState<Transcript["words"]>([]);
   const [currentWord, setCurrentWord] = useState("");
 
   const mimeRef = useRef<string>("audio/webm");
@@ -101,6 +107,7 @@ const Recorder = () => {
     setAudioURL("");
     setBlob(undefined);
     setResText("");
+    setTranscript([]);
     setCurrentWord("");
     chunksRef.current = [];
     if (progressBarRef.current) progressBarRef.current.style.width = "0%";
@@ -127,7 +134,8 @@ const Recorder = () => {
           return;
         }
 
-        const json = await res.json();
+        const json = (await res.json()) as Transcript;
+        setTranscript(json.words ?? []);
         setResText(json.text ?? "");
       }
     } catch (error) {
@@ -225,7 +233,7 @@ const Recorder = () => {
     <div className="flex flex-col justfy-center mt-20 items-center max-w-4xl mx-auto p-4">
       <div className="flex items-end justify-start mb-4 space-x-2 w-full">
         <h1 className="text-2xl font-bold">O-Cho (오초) </h1>
-        <span>ai가 발음을 채점해드립니다.</span>
+        <span>AI 발음 테스트</span>
       </div>
       <div className="p-6 border rounded-2xl w-full flex flex-col items-center">
         <div className="h-1 w-full bg-zinc-800 mb-4 rounded-full overflow-hidden">
@@ -260,7 +268,7 @@ const Recorder = () => {
         )}
         <div className="space-y-4 flex flex-col mt-20 items-center">
           {audioURL && state === "finished" && (
-            <div className="flex items-center flex-col space-y-4">
+            <div className="flex items-center justify-center flex-row space-y-4">
               <div className="space-x-4">
                 <Button onClick={onPlayPause} variant={"ghost"}>
                   미리듣기
@@ -281,11 +289,11 @@ const Recorder = () => {
               {loading ? (
                 <div className="flex items-center space-x-2">
                   <LoaderCircleIcon className="size-4 animate-spin" />
-                  <span>채점중...</span>
+                  <span>분석중...</span>
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <Button onClick={transcribe}>채점하기</Button>
+                  <Button onClick={transcribe}>분석하기</Button>
                   <Button onClick={reset} variant="secondary">
                     다시하기
                   </Button>
@@ -295,9 +303,13 @@ const Recorder = () => {
           )}
           {resText && (
             <div className="flex flex-col border rounded-2xl p-4">
-              <span>AI 채점 결과 {getScore(currentWord, resText)} %일치</span>
-              <div className="text-2xl max-w-90 flex items-center">
-                {resText}
+              <span>AI 분석 결과 {getScore(currentWord, resText)}% 일치</span>
+              <div className="max-w-90">
+                {transcript.map((t, i) => (
+                  <span key={i} className="text-2xl">
+                    {t.word}
+                  </span>
+                ))}
               </div>
             </div>
           )}
