@@ -242,7 +242,7 @@ const Recorder = () => {
   }, [state, stop]);
 
   return (
-    <div className="flex flex-col justfy-center mt-20 items-center max-w-4xl mx-auto p-4">
+    <div className="flex flex-col justfy-center mt-10 items-center max-w-xl mx-auto p-4">
       <div className="flex items-end justify-start mb-4 space-x-2 w-full">
         <h1 className="text-2xl font-bold">O-Cho (오초) </h1>
         <span>AI 발음 테스트</span>
@@ -319,10 +319,16 @@ const Recorder = () => {
                   return (
                     <span
                       key={i}
-                      className={`text-2xl transition-colors duration-100 ${
+                      onClick={() => {
+                        const start = t.start * 100;
+                        const end = transcript[transcript.length - 1].end * 100;
+                        wavesurfer?.seekTo(start / end);
+                        wavesurfer?.play();
+                      }}
+                      className={`text-2xl transition-colors duration-100 cursor-pointer ${
                         isActive
                           ? "text-emerald-400 font-bold"
-                          : "text-zinc-400"
+                          : "text-zinc-400 hover:text-zinc-100/80"
                       }`}
                     >
                       {t.word}{" "}
